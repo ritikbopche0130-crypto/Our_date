@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>date?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap');
+:root{
+  --pink:#d9799a; --purple:#9b6ab6; --cream:#f5f2f4; --ink:#6c3446;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; display:grid; place-items:center;
+  background:#ddd5d9; font-family:Georgia,'Times New Roman',serif; color:var(--ink);
+}
+.app{
+  width:min(92vw,560px); min-height:100vh; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; padding:30px 16px;
+  background:linear-gradient(#ddd7da,#e2dcdf);
+}
+.card{
+  width:min(100%,430px); background:rgba(250,253,252,.96);
+  border-radius:18px; padding:30px 24px; text-align:center;
+  box-shadow:0 8px 28px rgba(70,45,55,.08);
+}
+.hidden{display:none!important}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:27px;line-height:1.12;margin:12px 0 10px}
+p{margin:6px 0 18px;font-size:14px;color:#876b73}
+.hero-img{
+  width:92px;height:92px;object-fit:cover;border-radius:18px;
+  display:block;margin:0 auto 16px;background:#ddd;
+}
+button{
+  border:0; border-radius:22px; padding:11px 26px; margin:6px;
+  font:14px Georgia,serif; color:white; cursor:pointer;
+  transition:.15s transform,.15s filter;
+}
+button:hover{transform:translateY(-1px);filter:brightness(1.03)}
+.yes{background:var(--pink)} .no{background:var(--purple)}
+.primary{width:100%;margin:14px 0 0;background:var(--pink)}
+.small{font-size:12px;color:#9d8b91;margin-top:8px}
+label{display:block;text-align:left;font-size:13px;margin:12px 0 6px}
+input,select{
+  width:100%; padding:12px 11px; border:1px solid #d9d1d5;
+  border-radius:7px; background:white; color:#72525c; font:14px Georgia,serif;
+}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.food{
+  margin:0; padding:16px 5px; background:#f8f8f8; color:#6f4d58;
+  border:1px solid transparent; border-radius:10px;
+}
+.food.selected{border-color:#bd758e;background:#faf1f4}
+.foodimg{width:72px;height:52px;display:block;margin:0 auto 7px;border-radius:10px}.food .emoji{font-size:25px;display:block;margin-bottom:7px}
+.food span:last-child{font-size:12px;display:block}
+.icon{font-size:42px}
+.pricebox{
+  border:1px solid #d9c7ce;border-radius:10px;padding:14px;margin:15px 0;
+  text-align:left;background:#fbf7f8;
+}
+.pricebox b{float:right;color:#a34d6b;font-size:17px}
+.pricebox strong{display:block;font-size:14px;margin-bottom:5px}
+.pricebox small{color:#8e727a}
+.back{background:transparent;color:#927982;font-size:12px;padding:5px}
+.footer{position:fixed;bottom:8px;font:11px Georgia,serif;color:#8d7d83}
+.footer span{color:#d06c8d}
+#noMsg{min-height:17px;font-size:13px;color:#9b7580}
+@media(max-width:430px){h1{font-size:24px}.card{padding:25px 19px}}
+</style>
+
+<script>
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAld_5Xez-pAIc7qEsCHK-7c1cN9r2MYjGUtn4K8jIdRkuYQnnRfGfP7vG4ZNsC_dt/exec";
+
+async function saveResponse(response, finalAccepted=false) {
+  const payload = {
+    response: response || "NO",
+    date: document.getElementById("day")?.value || "",
+    time: document.getElementById("time")?.value || "",
+    food: typeof foodChoice !== "undefined" ? foodChoice : "",
+    accepted: finalAccepted ? "YES" : "NO"
+  };
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_")) return;
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.log("Response save failed", e);
+  }
+}
+</script>
+
+</head>
+<body>
+<div class="app">
+
+  <section id="s1" class="card">
+    <img class="hero-img" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20220%20220%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff5f1%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23fde7ed%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Crect%20width%3D%22220%22%20height%3D%22220%22%20rx%3D%2238%22%20fill%3D%22url%28%23bg%29%22%2F%3E%0A%3C%21--%20ears%20--%3E%0A%3Cpath%20d%3D%22M49%2069C17%2057%2014%20103%2030%20137c9%2019%2031%2012%2039-11l2-48z%22%20fill%3D%22%238a563d%22%2F%3E%0A%3Cpath%20d%3D%22M171%2069c32-12%2035%2034%2019%2068-9%2019-31%2012-39-11l-2-48z%22%20fill%3D%22%238a563d%22%2F%3E%0A%3C%21--%20head%20--%3E%0A%3Cellipse%20cx%3D%22110%22%20cy%3D%22112%22%20rx%3D%2270%22%20ry%3D%2272%22%20fill%3D%22%23d8a06e%22%2F%3E%0A%3C%21--%20white%20blaze%20--%3E%0A%3Cpath%20d%3D%22M105%2042c-14%2022-10%2049-8%2070%202%2022%201%2040%2013%2057%2011-15%2014-34%2013-54-1-24%205-48-8-73z%22%20fill%3D%22%23fffaf4%22%2F%3E%0A%3C%21--%20cheeks%20--%3E%0A%3Cellipse%20cx%3D%2278%22%20cy%3D%22126%22%20rx%3D%2230%22%20ry%3D%2231%22%20fill%3D%22%23f5d5b5%22%2F%3E%0A%3Cellipse%20cx%3D%22142%22%20cy%3D%22126%22%20rx%3D%2230%22%20ry%3D%2231%22%20fill%3D%22%23f5d5b5%22%2F%3E%0A%3C%21--%20eyes%20--%3E%0A%3Cellipse%20cx%3D%2282%22%20cy%3D%22108%22%20rx%3D%229%22%20ry%3D%2211%22%20fill%3D%22%233b2b2a%22%2F%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%22104%22%20r%3D%223%22%20fill%3D%22white%22%2F%3E%0A%3Cellipse%20cx%3D%22138%22%20cy%3D%22108%22%20rx%3D%229%22%20ry%3D%2211%22%20fill%3D%22%233b2b2a%22%2F%3E%3Ccircle%20cx%3D%22141%22%20cy%3D%22104%22%20r%3D%223%22%20fill%3D%22white%22%2F%3E%0A%3C%21--%20muzzle%20--%3E%0A%3Cellipse%20cx%3D%22110%22%20cy%3D%22139%22%20rx%3D%2234%22%20ry%3D%2227%22%20fill%3D%22%23fffaf5%22%2F%3E%0A%3Cellipse%20cx%3D%22110%22%20cy%3D%22133%22%20rx%3D%2213%22%20ry%3D%2210%22%20fill%3D%22%23392b2a%22%2F%3E%0A%3Cpath%20d%3D%22M110%20142c-2%209-10%2012-18%2011M110%20142c2%209%2010%2012%2018%2011%22%20fill%3D%22none%22%20stroke%3D%22%236a4038%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%21--%20tongue%20--%3E%0A%3Cpath%20d%3D%22M101%20155q9%2022%2018%200q-2%2024-9%2024t-9-24z%22%20fill%3D%22%23f18e9d%22%2F%3E%0A%3C%21--%20collar%20--%3E%0A%3Cpath%20d%3D%22M55%20165q55%2029%20110%200%22%20fill%3D%22none%22%20stroke%3D%22%23d76b88%22%20stroke-width%3D%2210%22%2F%3E%0A%3Ccircle%20cx%3D%22110%22%20cy%3D%22177%22%20r%3D%229%22%20fill%3D%22%23f4c95d%22%20stroke%3D%22%23c79535%22%20stroke-width%3D%222%22%2F%3E%0A%3C%21--%20hearts%20--%3E%0A%3Cpath%20d%3D%22M28%2037c-7-9-20%201%200%2017c20-16%207-26%200-17z%22%20fill%3D%22%23e985a0%22%2F%3E%0A%3Cpath%20d%3D%22M190%2038c-6-8-17%201%200%2014c17-13%206-22%200-14z%22%20fill%3D%22%23e985a0%22%2F%3E%0A%3C%2Fsvg%3E" alt="cute illustrated beagle puppy">
+    <h1>🌸 Will you go on a date with me? 🌸</h1>
+    <div>
+      <button class="yes" onclick="saveResponse('YES', false); show('s2')">YES ♥</button>
+      <button class="no" id="noBtn" onclick="saveResponse('NO', false); nope()">NO ❀</button>
+    </div>
+    <div id="noMsg"></div>
+  </section>
+
+  <section id="s2" class="card hidden">
+    <div class="icon">🫣</div>
+    <h1>WAIT YOU ACTUALLY<br>SAID YES?? 🥹</h1>
+    <p>I was so ready for you to say no 🥺</p>
+    <button class="primary" onclick="show('s3')">okay where?? →</button>
+  </section>
+
+  <section id="s3" class="card hidden">
+    <div class="icon">📅🐾</div>
+    <h1>So... when are you free?</h1>
+    <label>Pick a Day 📅</label>
+    <input id="day" type="date">
+    <label>What Time? ⏱</label>
+    <select id="time">
+      <option value="">Select a time...</option>
+      <option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option>
+      <option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option>
+      <option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option>
+      <option>9:00 PM</option>
+    </select>
+    <button class="primary" onclick="dateNext()">set the date! ♥</button>
+    <button class="back" onclick="show('s2')">go back</button>
+  </section>
+
+  <section id="s4" class="card hidden">
+    <div class="icon">🍽️✨</div>
+    <h1>What are we feeling? 🍽️✨</h1>
+    <p>pick your vibe</p>
+    <div class="grid">
+      <button class="food" onclick="pick(this,'Momos')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff7f3%27/%3E%3Cellipse%20cx=%2750%27%20cy=%2748%27%20rx=%2733%27%20ry=%278%27%20fill=%27%23eadbd4%27/%3E%3Cpath%20d=%27M22%2042c2-23%2054-23%2056%200z%27%20fill=%27%23fff%27%20stroke=%27%23cfa99b%27%20stroke-width=%272%27/%3E%3Cpath%20d=%27M30%2037q5-10%2010%200q5-10%2010%200q5-10%2010%200q5-10%2010%200%27%20fill=%27none%27%20stroke=%27%23d3b0a3%27%20stroke-width=%272%27/%3E%3Ccircle%20cx=%2750%27%20cy=%2729%27%20r=%273%27%20fill=%27%23d79a8b%27/%3E%3C/svg%3E"><span>Momos</span></button>
+      <button class="food" onclick="pick(this,'Panipuri')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff9ef%27/%3E%3Cg%20fill=%27%23d8a45d%27%20stroke=%27%23b9823e%27%20stroke-width=%271%27%3E%3Ccircle%20cx=%2725%27%20cy=%2734%27%20r=%2711%27/%3E%3Ccircle%20cx=%2748%27%20cy=%2729%27%20r=%2711%27/%3E%3Ccircle%20cx=%2773%27%20cy=%2735%27%20r=%2711%27/%3E%3Ccircle%20cx=%2738%27%20cy=%2750%27%20r=%2711%27/%3E%3Ccircle%20cx=%2762%27%20cy=%2751%27%20r=%2711%27/%3E%3C/g%3E%3Cg%20fill=%27%236c9b57%27%3E%3Ccircle%20cx=%2725%27%20cy=%2734%27%20r=%273%27/%3E%3Ccircle%20cx=%2748%27%20cy=%2729%27%20r=%273%27/%3E%3Ccircle%20cx=%2773%27%20cy=%2735%27%20r=%273%27/%3E%3C/g%3E%3C/svg%3E"><span>Panipuri</span></button>
+      <button class="food" onclick="pick(this,'Pizza')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff6ec%27/%3E%3Cpath%20d=%27M18%2016l67%208-38%2036z%27%20fill=%27%23f4c56a%27%20stroke=%27%23c98545%27%20stroke-width=%272%27/%3E%3Cpath%20d=%27M20%2017q32-5%2065%207%27%20fill=%27none%27%20stroke=%27%23e26c4f%27%20stroke-width=%277%27/%3E%3Cg%20fill=%27%23b94f43%27%3E%3Ccircle%20cx=%2742%27%20cy=%2730%27%20r=%274%27/%3E%3Ccircle%20cx=%2760%27%20cy=%2733%27%20r=%274%27/%3E%3Ccircle%20cx=%2752%27%20cy=%2743%27%20r=%274%27/%3E%3C/g%3E%3C/svg%3E"><span>Pizza</span></button>
+      <button class="food" onclick="pick(this,'Chowmein')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff8ef%27/%3E%3Cpath%20d=%27M17%2034q33%2025%2066%200l-6%2020H23z%27%20fill=%27%23e8d4c0%27%20stroke=%27%23b9987c%27%20stroke-width=%272%27/%3E%3Cg%20fill=%27none%27%20stroke=%27%23d28a45%27%20stroke-width=%273%27%3E%3Cpath%20d=%27M24%2031q12%2018%2025%200t26%200%27/%3E%3Cpath%20d=%27M28%2028q10%2018%2022%200t24%202%27/%3E%3Cpath%20d=%27M30%2035q9%2013%2020%201t21%200%27/%3E%3C/g%3E%3Ccircle%20cx=%2737%27%20cy=%2729%27%20r=%272%27%20fill=%27%236a9b52%27/%3E%3Ccircle%20cx=%2768%27%20cy=%2734%27%20r=%272%27%20fill=%27%23d95e4c%27/%3E%3C/svg%3E"><span>Chowmein</span></button>
+      <button class="food" onclick="pick(this,'Burger')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff6ed%27/%3E%3Cpath%20d=%27M20%2029q2-18%2030-18t30%2018z%27%20fill=%27%23d99a50%27%20stroke=%27%23b9753c%27%20stroke-width=%272%27/%3E%3Cg%20fill=%27%23f6e0a4%27%3E%3Ccircle%20cx=%2738%27%20cy=%2720%27%20r=%271.5%27/%3E%3Ccircle%20cx=%2752%27%20cy=%2717%27%20r=%271.5%27/%3E%3Ccircle%20cx=%2765%27%20cy=%2722%27%20r=%271.5%27/%3E%3C/g%3E%3Crect%20x=%2720%27%20y=%2729%27%20width=%2760%27%20height=%277%27%20rx=%273%27%20fill=%27%237aa84e%27/%3E%3Crect%20x=%2721%27%20y=%2736%27%20width=%2758%27%20height=%2710%27%20rx=%273%27%20fill=%27%239c5b3e%27/%3E%3Crect%20x=%2720%27%20y=%2746%27%20width=%2760%27%20height=%277%27%20rx=%273%27%20fill=%27%23e7b34d%27/%3E%3C/svg%3E"><span>Burger</span></button>
+      <button class="food" onclick="pick(this,'Pasta')"><img class="foodimg" src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2070%27%3E%3Crect%20width=%27100%27%20height=%2770%27%20rx=%2714%27%20fill=%27%23fff5f0%27/%3E%3Cellipse%20cx=%2750%27%20cy=%2743%27%20rx=%2734%27%20ry=%2717%27%20fill=%27%23e9d4c2%27%20stroke=%27%23b79582%27%20stroke-width=%272%27/%3E%3Cg%20fill=%27none%27%20stroke=%27%23d48b47%27%20stroke-width=%274%27%3E%3Cpath%20d=%27M25%2037q15%2016%2030%200t25%203%27/%3E%3Cpath%20d=%27M27%2044q12%2012%2024%200t23%201%27/%3E%3Cpath%20d=%27M35%2031q9%2010%2019%202t15%204%27/%3E%3C/g%3E%3Ccircle%20cx=%2762%27%20cy=%2735%27%20r=%274%27%20fill=%27%23d95c4d%27/%3E%3C/svg%3E"><span>Pasta</span></button>
+    </div>
+    <button class="primary" onclick="foodNext()">sounds perfect ♥</button>
+    <button class="back" onclick="show('s3')">go back</button>
+  </section>
+
+  <section id="s5" class="card hidden">
+    <div class="icon">🧾</div>
+    <h1>one small fee</h1>
+    <p>to confirm your acceptance of this date, please<br>
+      complete the following transaction. totally normal.<br>
+      everyone does this.</p>
+    <div class="pricebox">
+      <strong>Date Agreement™ <b>₹499</b></strong>
+      <small>me-time fee • non-refundable • absolutely worth it</small>
+    </div>
+    <button class="primary" onclick="reveal()">pay ₹499 & confirm 👉</button>
+    <button class="back" onclick="show('s4')">go back</button>
+  </section>
+
+  <section id="s6" class="card hidden">
+    <div class="icon">😂💗</div>
+    <h1>GOTCHA 😭</h1>
+    <p>No payment. No card. No money.<br>Just a date with me. ❤️</p>
+    <div class="pricebox">
+      <strong>Date Agreement™ <b>₹0</b></strong>
+      <small>100% refundable because you never paid anything 😌</small>
+    </div>
+    <button class="primary" onclick="acceptDate()">I accept the date 💕</button>
+  </section>
+
+  <div class="footer">▣ built on Replit <span>♥</span></div>
+</div>
+<script>
+let foodChoice='';
+function show(id){
+
+  document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function nope(){
+  const b=document.getElementById('noBtn'), m=document.getElementById('noMsg');
+  m.textContent='nice try 😭';
+  b.style.transform='translateX('+(Math.random()*120-60)+'px)';
+}
+function dateNext(){
+  if(!document.getElementById('day').value || !document.getElementById('time').value){
+    alert('Pick a day and time first 🥺'); return;
+  }
+  saveResponse('DATE_SELECTED', false);
+  show('s4');
+}
+function pick(el,name){
+  document.querySelectorAll('.food').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected'); foodChoice=name;
+}
+function foodNext(){
+  if(!foodChoice){alert('Pick your vibe first 🍕');return}
+  saveResponse('FOOD_SELECTED', false);
+  show('s5');
+}
+function reveal(){show('s6')}
+function acceptDate(){ saveResponse('ACCEPTED', true); alert('Date confirmed! ❤️'); }
+</script>
+</body>
+</html>
